@@ -42,6 +42,29 @@
         use {'nvim-tree/nvim-tree.lua', requires='nvim-tree/nvim-web-devicons', tag='nightly',} -- 文件目录:NvimTreeToggle, a:new file d:delete r:rename
         use "lukas-reineke/indent-blankline.nvim" -- 缩进线
         use 'itchyny/vim-cursorword' -- 光标下划线和高亮
+        use {'sainnhe/everforest'} -- theme everforest
+        use {'sonph/onehalf',rtp='vim/'} -- theme onehalf
+        use {'rose-pine/neovim',as = 'rose-pine'}
+        -- python auto-completion engine
+        use {"hrsh7th/nvim-cmp",}
+        -- nvim-cmp completion sources
+        use {"hrsh7th/cmp-nvim-lsp",}
+        use {'hrsh7th/cmp-cmdline',}
+        use {"hrsh7th/cmp-path",}
+        use {"hrsh7th/cmp-buffer",}
+        use {'SirVer/ultisnips',}
+        use {'honza/vim-snippets',}
+        use {'quangnguyen30192/cmp-nvim-ultisnips',}
+        use {'kkoomen/vim-doge', run=':call doge#install()' } -- 自动生成文档noral模式下 <Leader>d
+        use 'sbdchd/neoformat'  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
+        --" 代码高亮显示:TSInstall python css html javascript scss typescript
+        use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate'}
+        -- use 'romgrk/nvim-treesitter-context' --  类和函数超屏显示
+        use 'nvim-treesitter/nvim-treesitter-refactor' -- 变量与函数跳转 
+        use 'liuchengxu/vim-which-key' -- 快捷键提示
+        use 'alvan/vim-closetag'
+        -- use 'lyokha/vim-xkbswitch' -- 输入法自动切换
+        use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
 
 ## python 
     > pip install python-lsp-server python-lsp-black neovim ruff
