@@ -1,0 +1,90 @@
+# python + rust + nvim 
+## nvim 
+    > PackerSync + treesitter + nvim-lspconfig + nvim-cmp completion
+    > :TSInstall python css html javascript scss typescript
+    > Packer plugins
+        use {'wbthomason/packer.nvim'}
+        use {'rcarriga/nvim-notify'} -- notify
+        use 'neovim/nvim-lspconfig' -- lsp config
+        use 'simrat39/rust-tools.nvim' -- rust config
+        use {'dstein64/vim-startuptime'} -- 启动插件时间：StartupTime
+        use {'Yggdroot/LeaderF', run=':LeaderfInstallCExtension' } -- 模糊查找
+        -- 删除the delimiters entirely, press ds"
+        use 'tpope/vim-surround' -- 修改包裹符号 'string' 按下: cs'": string" 
+        use 'danilamihailov/beacon.nvim' --大跳转时分屏切换高亮显示
+        use 'rhysd/accelerated-jk' -- 加快j、k 速度
+        use 'mbbill/undotree' -- 显示撤消历史 ;u
+        use {'phaazon/hop.nvim',as = 'hop',
+            config = function()
+            -- Hop 快捷单词跳转 ;j 行跳转;l （比vim-easymotion更好用) :h hop-config 
+            require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+            end
+        }
+        use {'norcalli/nvim-colorizer.lua', -- color: #8080ff; 十六进制颜色实时显示
+        }
+        use 'scrooloose/nerdcommenter' --注释 ;cc 取消注释;cu
+        use 'mhinz/vim-startify' -- 在启动窗口显示最近打开的文件 :Startify
+        use 'jiangmiao/auto-pairs' -- 括号自动补全
+        use 'godlygeek/tabular' -- Text 对齐符号、对齐方式 :Tabularized /,
+        use 'mzlogin/vim-markdown-toc'-- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
+        use 'plasticboy/vim-markdown' -- markdown高亮显示;
+        -- [[ "跳转上一个标题 
+        -- ]] "跳转下一个标题
+        -- ]c "跳转到当前标题
+        -- ]u "跳转到副标题
+        -- zr "打开下一级折叠
+        -- zR "打开所有折叠
+        -- zm "折叠当前段落
+        -- zM "折叠所有段落
+        -- :Toc "显示目录依赖tabular
+        use {'akinsho/bufferline.nvim', tag='v3.*', requires='nvim-tree/nvim-web-devicons'} -- 顶部状态栏
+        use {'nvim-lualine/lualine.nvim', requires={'nvim-tree/nvim-web-devicons', opt=true}} -- 底部状态栏
+        use {'nvim-tree/nvim-tree.lua', requires='nvim-tree/nvim-web-devicons', tag='nightly',} -- 文件目录:NvimTreeToggle, a:new file d:delete r:rename
+        use "lukas-reineke/indent-blankline.nvim" -- 缩进线
+        use 'itchyny/vim-cursorword' -- 光标下划线和高亮
+
+## python 
+    > pip install python-lsp-server python-lsp-black neovim ruff
+### python StartupTime 
+    > python nvim-startuptime.py nvim                                                
+    > Running nvim to generate startup logs... done.
+    > Loading and processing logs... done.
+    > Plugin directory: ~/.local/share/nvim/site/pack/packer/start
+    =====================================
+    Top 50 plugins slowing nvim's startup
+    =====================================
+    1	 1.407   tabular
+    2	 1.336   onehalf
+    3	 0.864   nerdcommenter
+    4	 0.461   vim-doge
+    5	 0.365   LeaderF
+    6	 0.353   cmp-nvim-ultisnips
+    7	 0.326   ultisnips
+    8	 0.235   nvim-treesitter
+    9	 0.219   vim-closetag
+    10	 0.204   auto-pairs
+    11	 0.204   vim-surround
+    12	 0.198   vim-which-key
+    13	 0.193   nvim-cmp
+    14	 0.180   nvim-treesitter-refactor
+    15	 0.146   beacon.nvim
+    16	 0.116   nvim-lspconfig
+    17	 0.110   undotree
+    18	 0.108   hop
+    19	 0.095   vim-startuptime
+    20	 0.087   indent-blankline.nvim
+    21	 0.081   vim-cursorword
+    22	 0.057   vim-startify
+    23	 0.044   accelerated-jk
+    24	 0.034   cmp-buffer
+    25	 0.030   cmp-nvim-lsp
+    26	 0.027   auto-save.nvim
+    27	 0.026   cmp-path
+    28	 0.025   cmp-cmdline
+    29	 0.021   vim-markdown
+    30	 0.020   nvim-web-devicons
+    31	 0.019   nvim-colorizer.lua
+    32	 0.019   vim-snippets
+    33	 0.016   neoformat
+    34	 0.009   vim-markdown-toc
+    =====================================

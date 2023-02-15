@@ -45,7 +45,7 @@
 " > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
 " > conda config --set show_channel_urls yes
 " https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
-" pip install python-lsp-server python-lsp-black neovim flake8
+" pip install python-lsp-server python-lsp-black neovim ruff
 " ******************nvim treesitter语法高亮设置***************
 " 真彩色,修复终端和gui显示不同配色问题
 if has("termguicolors")
@@ -277,8 +277,7 @@ lspconfig.pylsp.setup({
   },
   capabilities = capabilities,
 })
--- javascript tssverver 
--- install nodejs npm
+-- javascript tssverver install nodejs npm
 -- npm install -g typescript typescript-language-server
 lspconfig.tsserver.setup({
     cmd = {"/opt/homebrew/bin/typescript-language-server", "--stdio" },
