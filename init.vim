@@ -45,7 +45,7 @@
 " > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
 " > conda config --set show_channel_urls yes
 " https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
-" pip install python-lsp-server python-lsp-black neovim ruff
+" pip install python-lsp-server python-lsp-black(模式化代码) neovim ruff python-lsp-ruff --改用rust ruff进行类型检查
 " ******************nvim treesitter语法高亮设置***************
 " 真彩色,修复终端和gui显示不同配色问题
 if has("termguicolors")
