@@ -256,17 +256,19 @@ local lspconfig = require("lspconfig")
 --        }
 -- }
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
--- pip install python-lsp-server python-lsp-black
+-- pip install python-lsp-server python-lsp-black(模式化代码) python-lsp-ruff --改用rust ruff进行类型检查
 lspconfig.pylsp.setup({
   on_attach = custom_attach,
   settings = {
     pylsp = {
       plugins = {
+        ruff = { enabled = true, executable = "ruff", lineLength = 128}, -- 用ruff替换pyflakes,flake8,pycodestyle,mccabe
         -- pylint = { enabled = true, executable = "pylint" },
-        pyflakes = { enabled = true, executable = "flake8"},
-        -- pycodestyle = { enabled = true},
-        jedi_completion = { fuzzy = true },
-        python_lsp_black = { enabled = true },
+        -- pyflakes = { enabled = false, executable = "flake8"},
+        -- pycodestyle = { enabled = false},
+        -- mccabe = { enabled = false},
+        jedi_completion = { fuzzy = true},
+        python_lsp_black = { enabled = true},
       },
     },
   },
