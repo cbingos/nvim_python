@@ -1,4 +1,13 @@
-# python + rust + nvim 
+<!-- vim-markdown-toc GFM -->
+
+* [python + rust + nvim](#python--rust--nvim)
+    * [nvim](#nvim)
+    * [python](#python)
+        * [python StartupTime](#python-startuptime)
+    * [rust](#rust)
+
+<!-- vim-markdown-toc -->
+# python + rust + nvim
 ## nvim 
     > PackerSync + treesitter + nvim-lspconfig + nvim-cmp completion
     > :TSInstall python css html javascript scss typescript
@@ -67,7 +76,7 @@
         use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
 
 ## python 
-    > pip install python-lsp-server python-lsp-black neovim ruff
+    > pip install python-lsp-server python-lsp-black(模式化代码) neovim ruff python-lsp-ruff --改用rust ruff进行类型检查
 ### python StartupTime 
     > python nvim-startuptime.py nvim                                                
     > Running nvim to generate startup logs... done.
@@ -111,3 +120,5 @@
     33	 0.016   neoformat
     34	 0.009   vim-markdown-toc
     =====================================
+## rust
+    > macos-->brew install rust-analyzer
