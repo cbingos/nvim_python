@@ -87,6 +87,7 @@ require('packer').startup({function()
     use 'scrooloose/nerdcommenter' --注释 ;cc 取消注释;cu
     use 'mhinz/vim-startify' -- 在启动窗口显示最近打开的文件 :Startify
     use 'jiangmiao/auto-pairs' -- 括号自动补全
+    use 'windwp/nvim-ts-autotag' -- 自动闭合/重命名html标签  html,tsx,vue,svelte,php,rescript.
     use 'godlygeek/tabular' -- Text 对齐符号、对齐方式 :Tabularized /,
     use 'mzlogin/vim-markdown-toc'-- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
     use 'plasticboy/vim-markdown' -- markdown高亮显示;
@@ -127,13 +128,41 @@ require('packer').startup({function()
     use 'nvim-treesitter/nvim-treesitter-refactor' -- 变量与函数跳转 
     use 'liuchengxu/vim-which-key' -- 快捷键提示
     use 'alvan/vim-closetag'
-    -- use 'lyokha/vim-xkbswitch' -- 输入法自动切换
     use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
 end,
     config = {
         display = {open_fn = require('packer.util').float,}
     }
 })
+-- 输入法自动切换start
+-- 记录当前输入法
+Current_input_method = vim.fn.system("/usr/local/bin/macism")
+
+-- 切换到英文输入法
+function Switch_to_English_input_method()
+    Current_input_method = vim.fn.system("/usr/local/bin/macism")
+    if Current_input_method ~= "com.apple.keylayout.ABC\n" then
+        vim.fn.system("/usr/local/bin/macism com.apple.keylayout.ABC")
+    end
+end
+
+-- 设置输入法
+function Set_input_method()
+    if Current_input_method ~= "com.apple.keylayout.ABC\n" then
+        vim.fn.system("/usr/local/bin/macism " .. string.gsub(Current_input_method, "\n", ""))
+    end
+end
+
+-- 进入 normal 模式时切换为英文输入法
+vim.cmd([[
+augroup input_method
+  autocmd!
+  autocmd InsertEnter * :lua Set_input_method()
+  autocmd InsertLeave * :lua Switch_to_English_input_method()
+augroup END
+]])
+-- 输入法自动切换start
+
 -- rust lspconfig : macos-->brew install rust-analyzer
 local rt = {
     server = {
@@ -317,6 +346,7 @@ require'nvim-treesitter.configs'.setup {
     indent = {
             enable = true,
     },
+    autotag = {enable=true},
     refactor = {
         highlight_definitions = { enable = true },
         -- highlight_current_scope = { enable = true }, 
@@ -741,11 +771,11 @@ set foldlevel=99
 " set guifont=Hack\ Regular\ Nerd\ Font\ Complete\ Mono 14
 " macOS (OS X) and Windows
 " set guifont=<FONT_NAME>:h<FONT_SIZE>
-set guifont=Hack\ Regular\ Nerd\ Font\ Complete\ Mono:h14
+" set guifont="Hack\ Regular\ Nerd\ Font\ Complete\ Mono":h14
 " ******************vim输入法自动切换***************
-" https://github.com/vovkasm/input-source-switcher git clone and make install
-" let g:XkbSwitchEnabled = 1
-" let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'
+" brew tap laishulu/macism
+" brew install macism
+" 切换至macism:lua:137
 " ******************neovim自带高亮复制显示设置***************
 augroup highlight_yank
     autocmd!

@@ -72,7 +72,6 @@
         use 'nvim-treesitter/nvim-treesitter-refactor' -- 变量与函数跳转 
         use 'liuchengxu/vim-which-key' -- 快捷键提示
         use 'alvan/vim-closetag'
-        -- use 'lyokha/vim-xkbswitch' -- 输入法自动切换
         use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
 
 ## python 
