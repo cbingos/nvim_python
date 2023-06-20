@@ -127,10 +127,7 @@ require('packer').startup({function()
     -- use 'romgrk/nvim-treesitter-context' --  类和函数超屏显示
     use 'nvim-treesitter/nvim-treesitter-refactor' -- 变量与函数跳转 
     use 'liuchengxu/vim-which-key' -- 快捷键提示
-    use { "laishulu/vim-macos-ime", config = function()
-        vim.g.macosime_normal_ime = 'com.apple.keylayout.ABC'
-        vim.g.macosime_cjk_ime = 'im.rime.inputmethod.Squirrel.Rime'
-    end}
+    -- 输入法切换: 用rime:squirrel.custom.yaml, https://github.com/cbingos/rime
     use 'alvan/vim-closetag'
     use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
 end,
@@ -748,10 +745,6 @@ set foldlevel=99
 " macOS (OS X) and Windows
 " set guifont=<FONT_NAME>:h<FONT_SIZE>
 " set guifont="Hack\ Regular\ Nerd\ Font\ Complete\ Mono":h14
-" ******************vim输入法自动切换***************
-" brew tap laishulu/macism
-" brew install macism
-" 切换至macism:lua:137
 " ******************neovim自带高亮复制显示设置***************
 augroup highlight_yank
     autocmd!
