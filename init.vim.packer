@@ -56,43 +56,41 @@ endif
 lua <<EOF
 local execute = vim.api.nvim_command
 local fn = vim.fn
-local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+
+if fn.empty(fn.glob(install_path)) > 0 then
+  fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+  execute 'packadd packer.nvim'
 end
-vim.opt.rtp:prepend(lazypath)
-require('lazy').setup({
-    {'rcarriga/nvim-notify'}, -- notify
-    {'neovim/nvim-lspconfig'}, -- lsp config
-    {'simrat39/rust-tools.nvim'}, -- rust config
-    {'dstein64/vim-startuptime'}, -- 启动插件时间：StartupTime
-    {'Yggdroot/LeaderF', build=':LeaderfInstallCExtension' }, -- 模糊查找
+vim.cmd [[packadd packer.nvim]]
+require('packer').startup({function()
+    -- Packer can manage itself
+    use {'wbthomason/packer.nvim'}
+    use {'rcarriga/nvim-notify'} -- notify
+    use 'neovim/nvim-lspconfig' -- lsp config
+    use 'simrat39/rust-tools.nvim' -- rust config
+    use {'dstein64/vim-startuptime'} -- 启动插件时间：StartupTime
+    use {'Yggdroot/LeaderF', run=':LeaderfInstallCExtension' } -- 模糊查找
     -- 删除the delimiters entirely, press ds"
-    {'tpope/vim-surround'}, -- 修改包裹符号 'string' 按下: cs'": string" 
-    {'danilamihailov/beacon.nvim'}, --大跳转时分屏切换高亮显示
-    {'rhysd/accelerated-jk'}, -- 加快j、k 速度
-    {'mbbill/undotree'}, -- 显示撤消历史 ;u
-    {'phaazon/hop.nvim',as = 'hop',
+    use 'tpope/vim-surround' -- 修改包裹符号 'string' 按下: cs'": string" 
+    use 'danilamihailov/beacon.nvim' --大跳转时分屏切换高亮显示
+    use 'rhysd/accelerated-jk' -- 加快j、k 速度
+    use 'mbbill/undotree' -- 显示撤消历史 ;u
+    use {'phaazon/hop.nvim',as = 'hop',
         config = function()
         -- Hop 快捷单词跳转 ;j 行跳转;l （比vim-easymotion更好用) :h hop-config 
         require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
         end
-    },
-    {'norcalli/nvim-colorizer.lua',}, -- color: #8080ff; 十六进制颜色实时显示
-    {'scrooloose/nerdcommenter'}, --注释 ;cc 取消注释;cu
-    {'mhinz/vim-startify'}, -- 在启动窗口显示最近打开的文件 :Startify
-    {'jiangmiao/auto-pairs'}, -- 括号自动补全
-    {'windwp/nvim-ts-autotag'}, -- 自动闭合/重命名html标签  html,tsx,vue,svelte,php,rescript.
-    {'godlygeek/tabular'}, -- Text 对齐符号、对齐方式 :Tabularized /,
-    {'mzlogin/vim-markdown-toc'}, -- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
-    {'plasticboy/vim-markdown'}, -- markdown高亮显示;
+    }
+    use {'norcalli/nvim-colorizer.lua', -- color: #8080ff; 十六进制颜色实时显示
+    }
+    use 'scrooloose/nerdcommenter' --注释 ;cc 取消注释;cu
+    use 'mhinz/vim-startify' -- 在启动窗口显示最近打开的文件 :Startify
+    use 'jiangmiao/auto-pairs' -- 括号自动补全
+    use 'windwp/nvim-ts-autotag' -- 自动闭合/重命名html标签  html,tsx,vue,svelte,php,rescript.
+    use 'godlygeek/tabular' -- Text 对齐符号、对齐方式 :Tabularized /,
+    use 'mzlogin/vim-markdown-toc'-- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
+    use 'plasticboy/vim-markdown' -- markdown高亮显示;
     -- [[ "跳转上一个标题 
     -- ]] "跳转下一个标题
     -- ]c "跳转到当前标题
@@ -102,45 +100,41 @@ require('lazy').setup({
     -- zm "折叠当前段落
     -- zM "折叠所有段落
     -- :Toc "显示目录依赖tabular
-    {'akinsho/bufferline.nvim', version='v3.*', dependencies='nvim-tree/nvim-web-devicons'}, -- 顶部状态栏
-    {'nvim-lualine/lualine.nvim', dependencies={'nvim-tree/nvim-web-devicons', lazy=true}}, -- 底部状态栏
-    {'nvim-tree/nvim-tree.lua', dependencies='nvim-tree/nvim-web-devicons', version='nightly',}, -- 文件目录:NvimTreeToggle, a:new file d:delete r:rename
-    {"lukas-reineke/indent-blankline.nvim"}, -- 缩进线
-    {'itchyny/vim-cursorword'}, -- 光标下划线和高亮
-    -- cd ~/.local/share/nvim/lazy/onehalf
-    -- ln -s vim/autoload ../onehalf/
-    -- ln -s vim/colors ../onehalf/
-    {'sainnhe/everforest'}, -- theme everforest
-    {'sonph/onehalf',
-        config = function(plugin)
-            vim.opt.rtp:append(plugin.dir .. "vim")
-        end
-    }, -- theme onehalf
-    {'rose-pine/neovim',name = 'rose-pine'},
+    use {'akinsho/bufferline.nvim', tag='v3.*', requires='nvim-tree/nvim-web-devicons'} -- 顶部状态栏
+    use {'nvim-lualine/lualine.nvim', requires={'nvim-tree/nvim-web-devicons', opt=true}} -- 底部状态栏
+    use {'nvim-tree/nvim-tree.lua', requires='nvim-tree/nvim-web-devicons', tag='nightly',} -- 文件目录:NvimTreeToggle, a:new file d:delete r:rename
+    use "lukas-reineke/indent-blankline.nvim" -- 缩进线
+    use 'itchyny/vim-cursorword' -- 光标下划线和高亮
+    -- cp -r ~/.local/share/nvim/site/pack/packer/start/onehalf/vim/* \
+    -- ~/.local/share/nvim/site/pack/packer/start/onehalf/
+    use {'sainnhe/everforest'} -- theme everforest
+    use {'sonph/onehalf',rtp='vim/'} -- theme onehalf
+    use { "ellisonleao/gruvbox.nvim" } -- theme
+    use {'rose-pine/neovim',as = 'rose-pine'}
     -- python auto-completion engine
-    {"hrsh7th/nvim-cmp",},
+    use {"hrsh7th/nvim-cmp",}
     -- nvim-cmp completion sources
-    {"hrsh7th/cmp-nvim-lsp",},
-    {'hrsh7th/cmp-cmdline',},
-    {"hrsh7th/cmp-path",},
-    {"hrsh7th/cmp-buffer",},
-    {'SirVer/ultisnips',},
-    {'honza/vim-snippets',},
-    {'quangnguyen30192/cmp-nvim-ultisnips',},
-    {'sbdchd/neoformat'},  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
+    use {"hrsh7th/cmp-nvim-lsp",}
+    use {'hrsh7th/cmp-cmdline',}
+    use {"hrsh7th/cmp-path",}
+    use {"hrsh7th/cmp-buffer",}
+    use {'SirVer/ultisnips',}
+    use {'honza/vim-snippets',}
+    use {'quangnguyen30192/cmp-nvim-ultisnips',}
+    use {'kkoomen/vim-doge', run=':call doge#install()' } -- 自动生成文档noral模式下 <Leader>d
+    use 'sbdchd/neoformat'  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
     --" 代码高亮显示:TSInstall python css html javascript scss typescript
-    {'nvim-treesitter/nvim-treesitter', build=':TSUpdate'},
-    {'romgrk/nvim-treesitter-context'}, --  类和函数超屏显示
-    {'nvim-treesitter/nvim-treesitter-refactor'}, -- 变量与函数跳转 
-    {'liuchengxu/vim-which-key',
-        init = function()
-            vim.o.timeout = true
-            vim.o.timeoutlen = 300
-        end,
-    }, -- 快捷键提示
+    use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate'}
+    -- use 'romgrk/nvim-treesitter-context' --  类和函数超屏显示
+    use 'nvim-treesitter/nvim-treesitter-refactor' -- 变量与函数跳转 
+    use 'liuchengxu/vim-which-key' -- 快捷键提示
     -- 输入法切换: 用rime:squirrel.custom.yaml, https://github.com/cbingos/rime
-    {'alvan/vim-closetag'},
-    {"Pocco81/auto-save.nvim"}, -- 自动保存 :ASToggle
+    use 'alvan/vim-closetag'
+    use "Pocco81/auto-save.nvim" -- 自动保存 :ASToggle
+end,
+    config = {
+        display = {open_fn = require('packer.util').float,}
+    }
 })
 
 -- rust lspconfig : macos-->brew install rust-analyzer
@@ -456,7 +450,7 @@ require("lualine").setup({
 require("nvim-tree").setup({
     -- 完全禁止内置netrw
     disable_netrw = true,
-    -- open_on_setup = true,
+    open_on_setup = true,
     -- open_on_tab = true,
     -- 不显示 git 状态图标
     git = {enable = false},
@@ -563,7 +557,6 @@ let g:netrw_winsize = 25
 let g:Lf_WindowPosition = 'popup'
 " brew install ctags 安装ctags 以便支持;:LeaderfFunction
 " 列出所有LeaderF的可执行命令, 供用户检索, 可以不用记忆所有其他命令
-noremap <silent> <Localleader>f :LeaderfFile <cr>
 noremap <silent> <Localleader>fh :LeaderfSelf<cr>
 " 搜索most recently used file, 默认显示100个, 可以配置数量
 noremap <silent> <Localleader>fm :LeaderfMru<cr>
@@ -582,8 +575,6 @@ noremap <silent> <Localleader>fw :LeaderfWindow<cr>
 " Hop 快捷单词跳转 ;j 行跳转;l 
 noremap <silent> <Localleader>j <cmd>lua require'hop'.hint_words()<cr>
 noremap <silent> <Localleader>l :HopLine<cr>
-noremap <silent> <Localleader>cc <Plug>NERDCommenterComment
-noremap <silent> <Localleader>cu <Plug>NERDCommenterUncomment
 " ******************vim-startify启动页***************
 let g:startify_session_dir = '~/.config/nvim/session'
 let g:startify_session_autoload = 1
@@ -611,10 +602,11 @@ if has("gui_running")
     set background=light
     " colorscheme everforest 
     colorscheme onehalflight
+    " colorscheme gruvbox 
 else
     set background=light
-    " colorscheme everforest 
     colorscheme onehalflight
+    " colorscheme gruvbox 
     " colorscheme rose-pine 
 endif
 " let g:everforest_background = 'hard'
@@ -823,6 +815,7 @@ nnoremap <silent> <Localleader>ge <cmd>lua vim.lsp.buf.references()<CR>
 " nnoremap <silent> <Localleader>gf <cmd>lua vim.lsp.buf.formatting()<CR>
 " ******************Leader***************
 let g:which_key_map_localleader =  {
+            \'b' : 'LeaderF 缓冲区文件',
             \'fb' : 'LeaderF 缓冲区tags所有',
             \'ft' : 'LeaderF 缓冲区tags当前',
             \'fh' : 'LeaderF 帮助',
@@ -895,7 +888,7 @@ autocmd! BufWritePost $MYVIMRC source $MYVIMRC
 " neovide配置
 " let g:neovide_refresh_rate=60 " 刷新率
 " let g:neovide_refresh_rate_idle=5 "闲置刷新率
-" let g:neovide_transparency=0.99 "透明度
+let g:neovide_transparency=0.99 "透明度
 " let g:neovide_cursor_trail_size=0.95 "动画步道大
-" let g:neovide_cursor_vfx_mode = "ripple" " 光标冒泡
-" let g:neovide_cursor_vfx_particle_speed = 2 " speed
+let g:neovide_cursor_vfx_mode = "ripple" " 光标冒泡
+let g:neovide_cursor_vfx_particle_speed = 2 " speed
