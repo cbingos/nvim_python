@@ -1,4 +1,4 @@
-" PackerSync + treesitter + nvim-lspconfig + nvim-cmp completion
+" Lazy.nvim + treesitter + nvim-lspconfig + nvim-cmp completion
 " ******************vim基础***************
 " 快速移动行:6m0 第6行移至第1行[range]m[range] -->move
 " 快速复制行:6c0 复制6行至第1行[range]c[range] -->copy
@@ -78,6 +78,12 @@ require('lazy').setup({
     {'tpope/vim-surround'}, -- 修改包裹符号 'string' 按下: cs'": string" 
     {'danilamihailov/beacon.nvim'}, --大跳转时分屏切换高亮显示
     {'rhysd/accelerated-jk'}, -- 加快j、k 速度
+    {
+      'stevearc/oil.nvim', -- vim 模式文件管理器,'-' 返回上一层
+      opts = {},
+      -- Optional dependencies
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+    },
     {'mbbill/undotree'}, -- 显示撤消历史 ;u
     {'phaazon/hop.nvim',as = 'hop',
         config = function()
@@ -104,7 +110,6 @@ require('lazy').setup({
     -- :Toc "显示目录依赖tabular
     {'akinsho/bufferline.nvim', version='v3.*', dependencies='nvim-tree/nvim-web-devicons'}, -- 顶部状态栏
     {'nvim-lualine/lualine.nvim', dependencies={'nvim-tree/nvim-web-devicons', lazy=true}}, -- 底部状态栏
-    {'nvim-tree/nvim-tree.lua', dependencies='nvim-tree/nvim-web-devicons', version='nightly',}, -- 文件目录:NvimTreeToggle, a:new file d:delete r:rename
     {"lukas-reineke/indent-blankline.nvim"}, -- 缩进线
     {'itchyny/vim-cursorword'}, -- 光标下划线和高亮
     -- cd ~/.local/share/nvim/lazy/onehalf
@@ -178,8 +183,134 @@ require'nvim-web-devicons'.setup({
  -- globally enable default icons (default to false)
  -- will get overriden by `get_icons` option
  default = true;
-}
-)
+})
+require("oil").setup({
+  -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
+  -- Set to false if you still want to use netrw.
+  default_file_explorer = true,
+  -- Id is automatically added at the beginning, and name at the end
+  -- See :help oil-columns
+  columns = {
+    "icon",
+    -- "permissions",
+    -- "size",
+    -- "mtime",
+  },
+  -- Buffer-local options to use for oil buffers
+  buf_options = {
+    buflisted = false,
+    bufhidden = "hide",
+  },
+  -- Window-local options to use for oil buffers
+  win_options = {
+    wrap = false,
+    signcolumn = "no",
+    cursorcolumn = false,
+    foldcolumn = "0",
+    spell = false,
+    list = false,
+    conceallevel = 3,
+    concealcursor = "n",
+  },
+  -- Restore window options to previous values when leaving an oil buffer
+  restore_win_options = true,
+  -- Skip the confirmation popup for simple operations
+  skip_confirm_for_simple_edits = false,
+  -- Deleted files will be removed with the trash_command (below).
+  delete_to_trash = false,
+  -- Change this to customize the command used when deleting to trash
+  trash_command = "trash-put",
+  -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
+  prompt_save_on_select_new_entry = true,
+  -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
+  -- options with a `callback` (e.g. { callback = function() ... end, desc = "", nowait = true })
+  -- Additionally, if it is a string that matches "actions.<name>",
+  -- it will use the mapping at require("oil.actions").<name>
+  -- Set to `false` to remove a keymap
+  -- See :help oil-actions for a list of all available actions
+  keymaps = {
+    ["g?"] = "actions.show_help",
+    ["<CR>"] = "actions.select",
+    ["<C-s>"] = "actions.select_vsplit",
+    ["<C-h>"] = "actions.select_split",
+    ["<C-t>"] = "actions.select_tab",
+    ["<C-p>"] = "actions.preview",
+    ["<C-c>"] = "actions.close",
+    ["<C-l>"] = "actions.refresh",
+    ["-"] = "actions.parent",
+    ["_"] = "actions.open_cwd",
+    ["`"] = "actions.cd",
+    ["~"] = "actions.tcd",
+    ["g."] = "actions.toggle_hidden",
+  },
+  -- Set to false to disable all of the above keymaps
+  use_default_keymaps = true,
+  view_options = {
+    -- Show files and directories that start with "."
+    show_hidden = false,
+    -- This function defines what is considered a "hidden" file
+    is_hidden_file = function(name, bufnr)
+      return vim.startswith(name, ".")
+    end,
+    -- This function defines what will never be shown, even when `show_hidden` is set
+    is_always_hidden = function(name, bufnr)
+      return false
+    end,
+  },
+  -- Configuration for the floating window in oil.open_float
+  float = {
+    -- Padding around the floating window
+    padding = 2,
+    max_width = 0,
+    max_height = 0,
+    border = "rounded",
+    win_options = {
+      winblend = 10,
+    },
+    -- This is the config that will be passed to nvim_open_win.
+    -- Change values here to customize the layout
+    override = function(conf)
+      return conf
+    end,
+  },
+  -- Configuration for the actions floating preview window
+  preview = {
+    -- Width dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+    -- min_width and max_width can be a single value or a list of mixed integer/float types.
+    -- max_width = {100, 0.8} means "the lesser of 100 columns or 80% of total"
+    max_width = 0.9,
+    -- min_width = {40, 0.4} means "the greater of 40 columns or 40% of total"
+    min_width = { 40, 0.4 },
+    -- optionally define an integer/float for the exact width of the preview window
+    width = nil,
+    -- Height dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+    -- min_height and max_height can be a single value or a list of mixed integer/float types.
+    -- max_height = {80, 0.9} means "the lesser of 80 columns or 90% of total"
+    max_height = 0.9,
+    -- min_height = {5, 0.1} means "the greater of 5 columns or 10% of total"
+    min_height = { 5, 0.1 },
+    -- optionally define an integer/float for the exact height of the preview window
+    height = nil,
+    border = "rounded",
+    win_options = {
+      winblend = 0,
+    },
+  },
+  -- Configuration for the floating progress window
+  progress = {
+    max_width = 0.9,
+    min_width = { 40, 0.4 },
+    width = nil,
+    max_height = { 10, 0.9 },
+    min_height = { 5, 0.1 },
+    height = nil,
+    border = "rounded",
+    minimized_border = "none",
+    win_options = {
+      winblend = 0,
+    },
+  },
+})
 require('rust-tools').setup(rt)
 local cmp = require'cmp'
 local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
@@ -453,40 +584,6 @@ require("lualine").setup({
   tabline = {},
   extensions = {'quickfix', 'fugitive'},
 })
-require("nvim-tree").setup({
-    -- 完全禁止内置netrw
-    disable_netrw = true,
-    -- open_on_setup = true,
-    -- open_on_tab = true,
-    -- 不显示 git 状态图标
-    git = {enable = false},
-    -- project plugin 需要这样设置
-    update_cwd = true,
-    update_focused_file = {
-        enable = true,
-        update_cwd = true,
-    },
-    filters = {
-        -- 隐藏 .文件
-        dotfiles = true,
-        -- 隐藏 node_modules 文件夹
-        -- custom = { "node_modules" },
-    },
-    actions = {
-        open_file = {
-        -- 首次打开大小适配
-        resize_window = true,
-        -- 打开文件时关闭 tree
-        quit_on_open = false,
-        },
-    },
-    system_open = {
-        -- mac
-        cmd = "open",
-        -- windows
-        -- cmd = "wsl-open",
-    },
-})
 require("bufferline").setup({
     options = {
         numbers = "buffer_id",
@@ -508,12 +605,12 @@ require("bufferline").setup({
         -- 使用 nvim 内置lsp
         diagnostics = "nvim_lsp",
         -- 左侧让出 nvim-tree 的位置
-        offsets = {{
-                filetype = "NvimTree",
-                text = "File Explorer",
-                highlight = "Directory",
-                text_align = "left"
-        }},
+        -- offsets = {{
+        --       filetype = "NvimTree",
+        --        text = "File Explorer",
+        --       highlight = "Directory",
+        --       text_align = "left"
+        -- }},
         custom_filter = function(bufnr)
           local exclude_ft = { "qf", "fugitive", "git" }
           local cur_ft = vim.bo[bufnr].filetype
@@ -582,8 +679,6 @@ noremap <silent> <Localleader>fw :LeaderfWindow<cr>
 " Hop 快捷单词跳转 ;j 行跳转;l 
 noremap <silent> <Localleader>j <cmd>lua require'hop'.hint_words()<cr>
 noremap <silent> <Localleader>l :HopLine<cr>
-noremap <silent> <Localleader>cc <Plug>NERDCommenterComment
-noremap <silent> <Localleader>cu <Plug>NERDCommenterUncomment
 " ******************vim-startify启动页***************
 let g:startify_session_dir = '~/.config/nvim/session'
 let g:startify_session_autoload = 1
@@ -609,11 +704,9 @@ let g:startify_bookmarks = ['~/Documents/Google/tornadoProject/ichingshifa','~/P
 " ******************theme 设置***************
 if has("gui_running")
     set background=light
-    " colorscheme everforest 
     colorscheme onehalflight
 else
     set background=light
-    " colorscheme everforest 
     colorscheme onehalflight
     " colorscheme rose-pine 
 endif
@@ -623,6 +716,8 @@ let g:everforest_better_performance = 1
 let g:neoformat_enabled_python = ['black']
 autocmd FileType python noremap <buffer> <F8> :Neoformat! python black --fast<CR>
 autocmd FileType js noremap <buffer> <F9> :Neoformat! js-beautify<CR>
+noremap <silent> <Localleader>cc <Plug>NERDCommenterComment
+noremap <silent> <Localleader>cu <Plug>NERDCommenterUncomment
 " save files with auto format
 " augroup fmt
 "   autocmd!
@@ -751,10 +846,10 @@ set foldlevel=99
 " -- brew install font-hack-nerd-font
 " Linux
 " set guifont=<FONT_NAME> <FONT_SIZE>
-" set guifont=Hack\ Regular\ Nerd\ Font\ Complete\ Mono 14
+" set guifont=hack_nerd_font_mono:h14
 " macOS (OS X) and Windows
 " set guifont=<FONT_NAME>:h<FONT_SIZE>
-" set guifont="Hack\ Regular\ Nerd\ Font\ Complete\ Mono":h14
+set guifont=hack_nerd_font_mono:h14
 " ******************neovim自带高亮复制显示设置***************
 augroup highlight_yank
     autocmd!
@@ -802,7 +897,7 @@ nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
 nnoremap <silent> <leader>wk :wincmd k<CR>
 nnoremap <silent> <leader>wl :wincmd l<CR>
-nnoremap <silent> <leader>nt :NvimTreeToggle<CR>
+nnoremap <silent> <leader>nt :Oil --float<CR>
 " ******************lsp-key设置***************
 " 查看函数声明
 " nnoremap <silent> <Localleader>gD <cmd>lua vim.lsp.buf.declaration()<CR>
