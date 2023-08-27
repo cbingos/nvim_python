@@ -115,13 +115,11 @@ require('lazy').setup({
     -- cd ~/.local/share/nvim/lazy/onehalf
     -- ln -s vim/autoload ../onehalf/
     -- ln -s vim/colors ../onehalf/
-    {'sainnhe/everforest'}, -- theme everforest
     {'sonph/onehalf',
         config = function(plugin)
             vim.opt.rtp:append(plugin.dir .. "vim")
         end
     }, -- theme onehalf
-    {'rose-pine/neovim',name = 'rose-pine'},
     -- python auto-completion engine
     {"hrsh7th/nvim-cmp",},
     -- nvim-cmp completion sources
@@ -708,10 +706,9 @@ if has("gui_running")
 else
     set background=light
     colorscheme onehalflight
-    " colorscheme rose-pine 
 endif
 " let g:everforest_background = 'hard'
-let g:everforest_better_performance = 1
+" let g:everforest_better_performance = 1
 " ******************neoformat 设置***************
 let g:neoformat_enabled_python = ['black']
 autocmd FileType python noremap <buffer> <F8> :Neoformat! python black --fast<CR>
