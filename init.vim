@@ -70,21 +70,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
     {'rcarriga/nvim-notify'}, -- notify
-    { -- better vim.ui
-    "stevearc/dressing.nvim",
-    lazy = true,
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
-      end
-    end,
+    {
+        'nvimdev/lspsaga.nvim',
+        config = function()
+            require('lspsaga').setup({})
+        end,
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter', -- optional
+            'nvim-tree/nvim-web-devicons'     -- optional
+        }
     },
     {'neovim/nvim-lspconfig'}, -- lsp config
     {'simrat39/rust-tools.nvim'}, -- rust config
@@ -523,6 +517,7 @@ require("notify").setup({
     TRACE = "✎",
   },
 })
+vim.notify = require("notify")
 -- 缩进线显示
 vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
