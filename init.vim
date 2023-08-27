@@ -70,6 +70,22 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
     {'rcarriga/nvim-notify'}, -- notify
+    { -- better vim.ui
+    "stevearc/dressing.nvim",
+    lazy = true,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+    },
     {'neovim/nvim-lspconfig'}, -- lsp config
     {'simrat39/rust-tools.nvim'}, -- rust config
     {'dstein64/vim-startuptime'}, -- 启动插件时间：StartupTime
@@ -680,6 +696,11 @@ noremap <silent> <Localleader>l :HopLine<cr>
 " ******************vim-startify启动页***************
 let g:startify_session_dir = '~/.config/nvim/session'
 let g:startify_session_autoload = 1
+let g:startify_custom_header = [
+    \ '+--------------------------+',
+    \ '     today is a good day    ',
+    \ '+--------------------------+',
+    \]
 function! s:gitModified()
     let files = systemlist('git ls-files -m 2>/dev/null')
     return map(files, "{'line': v:val, 'path': v:val}")
