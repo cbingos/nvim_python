@@ -83,7 +83,7 @@ require('lazy').setup({
     {'neovim/nvim-lspconfig'}, -- lsp config
     {'simrat39/rust-tools.nvim'}, -- rust config
     {'dstein64/vim-startuptime'}, -- 启动插件时间：StartupTime
-    {'Yggdroot/LeaderF', build=':LeaderfInstallCExtension' }, -- 模糊查找
+    {'Yggdroot/LeaderF', build=':LeaderfInstallCExtension' }, -- 模糊查找 brew install universal-ctags
     -- 删除the delimiters entirely, press ds"
     {'tpope/vim-surround'}, -- 修改包裹符号 'string' 按下: cs'": string" 
     {'danilamihailov/beacon.nvim'}, --大跳转时分屏切换高亮显示
@@ -107,8 +107,13 @@ require('lazy').setup({
     {'jiangmiao/auto-pairs'}, -- 括号自动补全
     {'windwp/nvim-ts-autotag'}, -- 自动闭合/重命名html标签  html,tsx,vue,svelte,php,rescript.
     {'godlygeek/tabular'}, -- Text 对齐符号、对齐方式 :Tabularized /,
+    {"iamcco/markdown-preview.nvim",event = "BufRead",
+        build = function()
+            vim.fn["mkdp#util#install"]()
+        end,
+    }, -- leader;+md开启markdown预览:MarkdownPreviewToggle :MarkdownPreview :MarkdownPreviewStop
     {'mzlogin/vim-markdown-toc'}, -- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
-    {'plasticboy/vim-markdown'}, -- markdown高亮显示;
+    {'plasticboy/vim-markdown'}, -- markdown高亮显示
     -- [[ "跳转上一个标题 
     -- ]] "跳转下一个标题
     -- ]c "跳转到当前标题
@@ -143,7 +148,7 @@ require('lazy').setup({
     {'sbdchd/neoformat'},  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
     --" 代码高亮显示:TSInstall python css html javascript scss typescript
     {'nvim-treesitter/nvim-treesitter', build=':TSUpdate'},
-    {'romgrk/nvim-treesitter-context'}, --  类和函数超屏显示
+    {'wellle/context.vim'}, --  类和函数超屏显示
     {'nvim-treesitter/nvim-treesitter-refactor'}, -- 变量与函数跳转 
     {'liuchengxu/vim-which-key',
         init = function()
@@ -487,11 +492,7 @@ require'nvim-treesitter.configs'.setup {
         },
     },
 }
--- require'treesitter-context.config'.setup{
---    enable = true, -- 函数或类太长时，上方显示该前所属
--- }
 -- 通知窗口
--- vim.notify = require("notify")
 require("notify").setup({
   -- Animation style (see below for details)
   stages = "fade_in_slide_out",
@@ -723,8 +724,15 @@ else
     set background=light
     colorscheme onehalflight
 endif
-" let g:everforest_background = 'hard'
-" let g:everforest_better_performance = 1
+" ******************MarkdownPreview设置: leader+md开启markdown预览***************
+noremap <silent> <Localleader>md <Plug>MarkdownPreviewToggle
+let g:mkdp_auto_start = 0 "打开文件后自动弹出, 0 为否
+let g:mkdp_auto_close = 1 "关闭文件后自动关闭预览窗口, 1 为是
+let g:mkdp_refresh_slow = 1 "慢速预览, 修改后退出 insert 模式后方会刷新视图, 1 为是
+let g:mkdp_open_to_the_world = 0 "开启公网链接, 0 为否
+let g:mkdp_browser = '' "指定浏览器, 默认会跟随系统浏览器
+let g:mkdp_port = '' " 指定端口, 默认随机端口
+let g:mkdp_page_title = ' **${name}** ' "指定浏览器窗口标题, 默认为 Markdown 文件名
 " ******************neoformat 设置***************
 let g:neoformat_enabled_python = ['black']
 autocmd FileType python noremap <buffer> <F8> :Neoformat! python black --fast<CR>
