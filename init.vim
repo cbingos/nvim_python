@@ -23,30 +23,7 @@
 " 水平窗口：:sp 
 " 垂直窗口：:vsp 
 " 关闭窗口：:clo[se]
-" 切换窗口：Ctrl+w +h,j,k,l
-" ******************## [python miniforge环境设置](https://github.com/conda-forge/miniforge)
-" ### download miniforge
-" 1. for mac:
-" > bash: curl -fsSLo Miniforge3.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-$(uname -m).sh
-" 2. for linux 
-" > curl -o Miniforge3-linux-x86_64.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-" ### install miniforge
-" > bash Miniforge3-xxx.sh -b
-" > $HOME/miniforge3
-" > conda env list (for fish shell: conda init fish)
-" ### settings miniforge
-" > conda create -n base python
-" > conda activate base
-" > conda deactivate base
-" > conda配置清华源
-" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
-" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
-" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
-" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
-" > conda config --set show_channel_urls yes
-" https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
-" pip install python-lsp-server python-lsp-black(模式化代码) neovim ruff python-lsp-ruff --改用rust ruff进行类型检查
-" ******************nvim treesitter语法高亮设置***************
+" 切换窗口：Ctrl+w +h,j,k,l; kitty改变窗口布局:Ctrl+Shift+l
 " 真彩色,修复终端和gui显示不同配色问题
 if has("termguicolors")
     " enable true color
@@ -113,16 +90,7 @@ require('lazy').setup({
         end,
     }, -- leader;+md开启markdown预览:MarkdownPreviewToggle :MarkdownPreview :MarkdownPreviewStop
     {'mzlogin/vim-markdown-toc'}, -- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
-    {'plasticboy/vim-markdown'}, -- markdown高亮显示
-    -- [[ "跳转上一个标题 
-    -- ]] "跳转下一个标题
-    -- ]c "跳转到当前标题
-    -- ]u "跳转到副标题
-    -- zr "打开下一级折叠
-    -- zR "打开所有折叠
-    -- zm "折叠当前段落
-    -- zM "折叠所有段落
-    -- :Toc "显示目录依赖tabular
+    -- {'plasticboy/vim-markdown'}, -- markdown高亮显示
     {'akinsho/bufferline.nvim', version='v3.*', dependencies='nvim-tree/nvim-web-devicons'}, -- 顶部状态栏
     {'nvim-lualine/lualine.nvim', dependencies={'nvim-tree/nvim-web-devicons', lazy=true}}, -- 底部状态栏
     {"lukas-reineke/indent-blankline.nvim"}, -- 缩进线
@@ -148,7 +116,7 @@ require('lazy').setup({
     {'sbdchd/neoformat'},  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
     --" 代码高亮显示:TSInstall python css html javascript scss typescript
     {'nvim-treesitter/nvim-treesitter', build=':TSUpdate'},
-    {'wellle/context.vim'}, --  类和函数超屏显示
+    -- {'wellle/context.vim'}, --  类和函数超屏显示
     {'nvim-treesitter/nvim-treesitter-refactor'}, -- 变量与函数跳转 
     {'liuchengxu/vim-which-key',
         init = function()
@@ -410,8 +378,12 @@ local lspconfig = require("lspconfig")
 -- }
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
 -- pip install python-lsp-server python-lsp-black(模式化代码) python-lsp-ruff --改用rust ruff进行类型检查
+lspconfig.html.setup { -- html: npm i -g vscode-langservers-extracted
+  capabilities = capabilities,
+}
 lspconfig.pylsp.setup({
   on_attach = custom_attach,
+  single_file_support = false, -- fix:cpu100%
   settings = {
     pylsp = {
       plugins = {
@@ -434,7 +406,7 @@ lspconfig.pylsp.setup({
 -- npm install -g typescript typescript-language-server
 lspconfig.tsserver.setup({
     cmd = {"/opt/homebrew/bin/typescript-language-server", "--stdio" },
-    filetypes = {"js", "ts", "html", "javascript", "javascriptreact", "javascript.jsx", "typescript",
+    filetypes = {"js", "ts", "javascript", "javascriptreact", "javascript.jsx", "typescript",
     "typescriptreact", "typescript.tsx"},
     capabilities = capabilities,
 })
@@ -1015,3 +987,25 @@ autocmd! BufWritePost $MYVIMRC source $MYVIMRC
 " let g:neovide_cursor_trail_size=0.95 "动画步道大
 " let g:neovide_cursor_vfx_mode = "ripple" " 光标冒泡
 " let g:neovide_cursor_vfx_particle_speed = 2 " speed
+" ******************## [python miniforge环境设置](https://github.com/conda-forge/miniforge)
+" ### download miniforge
+" 1. for mac:
+" > bash: curl -fsSLo Miniforge3.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-$(uname -m).sh
+" 2. for linux 
+" > curl -o Miniforge3-linux-x86_64.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+" ### install miniforge
+" > bash Miniforge3-xxx.sh -b
+" > $HOME/miniforge3
+" > conda env list (for fish shell: conda init fish)
+" ### settings miniforge
+" > conda create -n base python
+" > conda activate base
+" > conda deactivate base
+" > conda配置清华源
+" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+" > conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+" > conda config --set show_channel_urls yes
+" https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pylsp
+" pip install python-lsp-server python-lsp-black(模式化代码) neovim ruff python-lsp-ruff --改用rust ruff进行类型检查
