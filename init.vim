@@ -31,6 +31,7 @@ if has("termguicolors")
     set guioptions-=e
 endif
 lua <<EOF
+-- vim.g.python3_host_prog = "/Users/abc/Documents/rye/nvim_py/.venv/bin/python3"
 local execute = vim.api.nvim_command
 local fn = vim.fn
 local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -57,6 +58,36 @@ require('lazy').setup({
             'nvim-tree/nvim-web-devicons'     -- optional
         }
     },
+    ---@type LazySpec 文件管理器
+    -- brew install yazi ffmpegthumbnailer unar jq poppler fd ripgrep fzf zoxide font-symbols-only-nerd-font
+    -- fzf --fish | source
+    {
+      "mikavilpas/yazi.nvim",
+      event = "VeryLazy",
+      keys = {
+        -- 👇 in this section, choose your own keymappings!
+        {
+          "<leader>nt",
+          function()
+            require("yazi").yazi()
+          end,
+          desc = "Open the file manager",
+        },
+        {
+          -- Open in the current working directory
+          "<leader>cw",
+          function()
+            require("yazi").yazi(nil, vim.fn.getcwd())
+          end,
+          desc = "Open the file manager in nvim's working directory" ,
+        },
+      },
+      ---@type YaziConfig
+      opts = {
+        -- if you want to open yazi instead of netrw, see below for more info
+        open_for_directories = false,
+      },
+    },
     {'neovim/nvim-lspconfig'}, -- lsp config
     {'simrat39/rust-tools.nvim'}, -- rust config
     {'dstein64/vim-startuptime'}, -- 启动插件时间：StartupTime
@@ -65,12 +96,6 @@ require('lazy').setup({
     {'tpope/vim-surround'}, -- 修改包裹符号 'string' 按下: cs'": string" 
     {'danilamihailov/beacon.nvim'}, --大跳转时分屏切换高亮显示
     {'rhysd/accelerated-jk'}, -- 加快j、k 速度
-    {
-      'stevearc/oil.nvim', -- vim 模式文件管理器,'-' 返回上一层
-      opts = {},
-      -- Optional dependencies
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-    },
     {'mbbill/undotree'}, -- 显示撤消历史 ;u
     {'phaazon/hop.nvim',as = 'hop',
         config = function()
@@ -90,8 +115,8 @@ require('lazy').setup({
         end,
     }, -- leader;+md开启markdown预览:MarkdownPreviewToggle :MarkdownPreview :MarkdownPreviewStop
     {'mzlogin/vim-markdown-toc'}, -- markdown生成目录:GenTocGFM :UpdateToc :RemoveToc
-    -- {'plasticboy/vim-markdown'}, -- markdown高亮显示
-    {'akinsho/bufferline.nvim', version='v3.*', dependencies='nvim-tree/nvim-web-devicons'}, -- 顶部状态栏
+    {'plasticboy/vim-markdown'}, -- markdown高亮显示
+    {'akinsho/bufferline.nvim', dependencies='nvim-tree/nvim-web-devicons'}, -- 顶部状态栏
     {'nvim-lualine/lualine.nvim', dependencies={'nvim-tree/nvim-web-devicons', lazy=true}}, -- 底部状态栏
     {"lukas-reineke/indent-blankline.nvim", main="ibl", opts = {}}, -- 缩进线
     {'itchyny/vim-cursorword'}, -- 光标下划线和高亮
@@ -112,6 +137,7 @@ require('lazy').setup({
             vim.opt.rtp:append(plugin.dir .. "vim")
         end
     }, -- theme onehalf
+    {'Exafunction/codeium.vim'},
     -- python auto-completion engine
     {"hrsh7th/nvim-cmp",},
     -- nvim-cmp completion sources
@@ -121,9 +147,9 @@ require('lazy').setup({
     {"hrsh7th/cmp-buffer",},
     {'SirVer/ultisnips',},
     {'honza/vim-snippets',},
-    {'quangnguyen30192/cmp-nvim-ultisnips',},
+    --  {'quangnguyen30192/cmp-nvim-ultisnips',},
     {'sbdchd/neoformat'},  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
-    --" 代码高亮显示:TSInstall python css html javascript scss typescript
+    --" 代码高亮显示:TSInstall python css html javascript scss typescript fish rust dart markdown markdown_inline
     {'nvim-treesitter/nvim-treesitter', build=':TSUpdate'},
     -- {'wellle/context.vim'}, --  类和函数超屏显示
     {'nvim-treesitter/nvim-treesitter-refactor'}, -- 变量与函数跳转 
@@ -174,136 +200,9 @@ require'nvim-web-devicons'.setup({
  -- will get overriden by `get_icons` option
  default = true;
 })
-require("oil").setup({
-  -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
-  -- Set to false if you still want to use netrw.
-  default_file_explorer = true,
-  -- Id is automatically added at the beginning, and name at the end
-  -- See :help oil-columns
-  columns = {
-    "icon",
-    -- "permissions",
-    -- "size",
-    -- "mtime",
-  },
-  -- Buffer-local options to use for oil buffers
-  buf_options = {
-    buflisted = false,
-    bufhidden = "hide",
-  },
-  -- Window-local options to use for oil buffers
-  win_options = {
-    wrap = false,
-    signcolumn = "no",
-    cursorcolumn = false,
-    foldcolumn = "0",
-    spell = false,
-    list = false,
-    conceallevel = 3,
-    concealcursor = "n",
-  },
-  -- Restore window options to previous values when leaving an oil buffer
-  restore_win_options = true,
-  -- Skip the confirmation popup for simple operations
-  skip_confirm_for_simple_edits = false,
-  -- Deleted files will be removed with the trash_command (below).
-  delete_to_trash = false,
-  -- Change this to customize the command used when deleting to trash
-  trash_command = "trash-put",
-  -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
-  prompt_save_on_select_new_entry = true,
-  -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
-  -- options with a `callback` (e.g. { callback = function() ... end, desc = "", nowait = true })
-  -- Additionally, if it is a string that matches "actions.<name>",
-  -- it will use the mapping at require("oil.actions").<name>
-  -- Set to `false` to remove a keymap
-  -- See :help oil-actions for a list of all available actions
-  keymaps = {
-    ["g?"] = "actions.show_help",
-    ["<CR>"] = "actions.select",
-    ["<C-s>"] = "actions.select_vsplit",
-    ["<C-h>"] = "actions.select_split",
-    ["<C-t>"] = "actions.select_tab",
-    ["<C-p>"] = "actions.preview",
-    ["<C-c>"] = "actions.close",
-    ["<C-l>"] = "actions.refresh",
-    ["-"] = "actions.parent",
-    ["_"] = "actions.open_cwd",
-    ["`"] = "actions.cd",
-    ["~"] = "actions.tcd",
-    ["g."] = "actions.toggle_hidden",
-  },
-  -- Set to false to disable all of the above keymaps
-  use_default_keymaps = true,
-  view_options = {
-    -- Show files and directories that start with "."
-    show_hidden = false,
-    -- This function defines what is considered a "hidden" file
-    is_hidden_file = function(name, bufnr)
-      return vim.startswith(name, ".")
-    end,
-    -- This function defines what will never be shown, even when `show_hidden` is set
-    is_always_hidden = function(name, bufnr)
-      return false
-    end,
-  },
-  -- Configuration for the floating window in oil.open_float
-  float = {
-    -- Padding around the floating window
-    padding = 2,
-    max_width = 0,
-    max_height = 0,
-    border = "rounded",
-    win_options = {
-      winblend = 10,
-    },
-    -- This is the config that will be passed to nvim_open_win.
-    -- Change values here to customize the layout
-    override = function(conf)
-      return conf
-    end,
-  },
-  -- Configuration for the actions floating preview window
-  preview = {
-    -- Width dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-    -- min_width and max_width can be a single value or a list of mixed integer/float types.
-    -- max_width = {100, 0.8} means "the lesser of 100 columns or 80% of total"
-    max_width = 0.9,
-    -- min_width = {40, 0.4} means "the greater of 40 columns or 40% of total"
-    min_width = { 40, 0.4 },
-    -- optionally define an integer/float for the exact width of the preview window
-    width = nil,
-    -- Height dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-    -- min_height and max_height can be a single value or a list of mixed integer/float types.
-    -- max_height = {80, 0.9} means "the lesser of 80 columns or 90% of total"
-    max_height = 0.9,
-    -- min_height = {5, 0.1} means "the greater of 5 columns or 10% of total"
-    min_height = { 5, 0.1 },
-    -- optionally define an integer/float for the exact height of the preview window
-    height = nil,
-    border = "rounded",
-    win_options = {
-      winblend = 0,
-    },
-  },
-  -- Configuration for the floating progress window
-  progress = {
-    max_width = 0.9,
-    min_width = { 40, 0.4 },
-    width = nil,
-    max_height = { 10, 0.9 },
-    min_height = { 5, 0.1 },
-    height = nil,
-    border = "rounded",
-    minimized_border = "none",
-    win_options = {
-      winblend = 0,
-    },
-  },
-})
 require('rust-tools').setup(rt)
 local cmp = require'cmp'
-local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
+--local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
 cmp.setup({
     snippet = {
       expand = function(args)
@@ -328,8 +227,8 @@ cmp.setup({
           if cmp.visible() then
             cmp.select_next_item()
           else
-            -- fallback()
-            cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
+            fallback()
+            --cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
           end
       end,
       ['<S-Tab>'] = function(fallback)
@@ -409,6 +308,7 @@ lspconfig.pylsp.setup({
   flags = {
     debounce_text_changes = 200,
   },
+  cmd = {"/Users/abc/Documents/rye/nvim_py/.venv/bin/pylsp"},
   capabilities = capabilities,
 })
 -- javascript tssverver install nodejs npm
@@ -642,7 +542,8 @@ require("bufferline").setup({
 EOF
 let g:vim_markdown_math = 1
 " ******************python path设置***************
-let g:python3_host_prog = "/Users/abc/miniforge3/bin/python"
+" let g:python3_host_prog = "/Users/abc/miniforge3/bin/python"
+let g:python3_host_prog = "/Users/abc/Documents/rye/nvim_py/.venv/bin/python3"
 " ******************UltiSnips设置***************
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
@@ -713,7 +614,7 @@ let g:startify_lists = [
         \ { 'type': function('s:gitUntracked'), 'header': ['   git untracked']},
         \ { 'type': 'commands',  'header': ['   Commands']       },
         \ ]
-let g:startify_bookmarks = ['~/Documents/Google/tornadoProject/ichingshifa','~/Public/']
+let g:startify_bookmarks = ['/Users/abc/Documents/rye/ichingshifa/src/ichingshifa','~/Public/','~/flutter_pj/']
 " ******************theme 设置***************
 if has("gui_running")
     set background=light
@@ -916,7 +817,7 @@ nnoremap <silent> <leader>wh :wincmd h<CR>
 nnoremap <silent> <leader>wj :wincmd j<CR>
 nnoremap <silent> <leader>wk :wincmd k<CR>
 nnoremap <silent> <leader>wl :wincmd l<CR>
-nnoremap <silent> <leader>nt :Oil --float<CR>
+" nnoremap <silent> <leader>nt :Oil --float<CR>
 " ******************lsp-key设置***************
 " 查看函数声明
 " nnoremap <silent> <Localleader>gD <cmd>lua vim.lsp.buf.declaration()<CR>
@@ -1011,7 +912,7 @@ autocmd! BufWritePost $MYVIMRC source $MYVIMRC
 " let g:neovide_refresh_rate_idle=5 "闲置刷新率
 " let g:neovide_transparency=0.99 "透明度
 " let g:neovide_cursor_trail_size=0.95 "动画步道大
-" let g:neovide_cursor_vfx_mode = "ripple" " 光标冒泡
+let g:neovide_cursor_vfx_mode = "ripple" " 光标冒泡
 " let g:neovide_cursor_vfx_particle_speed = 2 " speed
 " ******************## [python miniforge环境设置](https://github.com/conda-forge/miniforge)
 " ### download miniforge
