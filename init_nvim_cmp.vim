@@ -113,9 +113,10 @@ require('lazy').setup({
         open_for_directories = false,
       },
     },
+    {'neovim/nvim-lspconfig'}, -- lsp config
     {'simrat39/rust-tools.nvim'}, -- rust config
     {'dstein64/vim-startuptime'}, -- 启动插件时间：StartupTime
-    -- {'Yggdroot/LeaderF', build=':LeaderfInstallCExtension' }, -- 模糊查找 brew install universal-ctags
+    {'Yggdroot/LeaderF', build=':LeaderfInstallCExtension' }, -- 模糊查找 brew install universal-ctags
     {"nvim-telescope/telescope.nvim",tag = "0.1.8", dependencies = { "nvim-lua/plenary.nvim" },},
     -- 删除the delimiters entirely, press ds"
     {'tpope/vim-surround'}, -- 修改包裹符号 'string' 按下: cs'": string" 
@@ -164,111 +165,15 @@ require('lazy').setup({
     }, -- theme onehalf
     {'Exafunction/codeium.vim'},
     -- python auto-completion engine
-    {
-      'saghen/blink.cmp',
-      -- optional: provides snippets for the snippet source
-      dependencies = 'rafamadriz/friendly-snippets',
-      -- use a release tag to download pre-built binaries
-      version = '*',
-      -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-      -- build = 'cargo build --release',
-      -- If you use nix, you can build from source using latest nightly rust with:
-      -- build = 'nix run .#build-plugin',
-      ---@module 'blink.cmp'
-      ---@type blink.cmp.Config
-      opts = {
-        -- 'default' for mappings similar to built-in completion
-        -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-        -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-        -- See the full "keymap" documentation for information on defining your own keymap.
-        keymap = { 
-            preset = 'enter',
-            ["<Tab>"] = {
-                function(cmp)
-                  if cmp.is_visible() then
-                    return cmp.select_next()
-                  elseif cmp.snippet_active() then
-                    return cmp.snippet_forward()
-                  else
-                    return false
-                  end
-                end,
-                "fallback",
-              },
-              ["<S-Tab>"] = {
-                function(cmp)
-                  if cmp.is_visible() then
-                    return cmp.select_prev()
-                  elseif cmp.snippet_active() then
-                    return cmp.snippet_backward()
-                  else
-                    return false
-                  end
-                end,
-                "fallback",
-              },
-              cmdline = {
-                preset = "default",
-                ["<Tab>"] = { "select_next", "fallback" },
-                ["<S-Tab>"] = { "select_prev", "fallback" },
-              },
-        },
-        appearance = {
-          -- Sets the fallback highlight groups to nvim-cmp's highlight groups
-          -- Useful for when your theme doesn't support blink.cmp
-          -- Will be removed in a future release
-          use_nvim_cmp_as_default = true,
-          -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-          -- Adjusts spacing to ensure icons are aligned
-          nerd_font_variant = 'mono'
-        },
-        -- Default list of enabled providers defined so that you can extend it
-        -- elsewhere in your config, without redefining it, due to `opts_extend`
-        sources = {
-          default = { 'lsp', 'path', 'snippets', 'buffer' },
-        },
-      },
-      opts_extend = { "sources.default" }
-    },
-    {
-      "neovim/nvim-lspconfig",
-      event = { "BufReadPre", "BufNewFile" },
-      dependencies = { "saghen/blink.cmp" },
-      config = function()
-        vim.diagnostic.config({
-          virtual_text = {
-            prefix = "●", -- Could be '●', '▎', 'x', ■
-            spacing = 4,
-          },
-          float = { border = "rounded" },
-          signs = {
-            text = {
-              [vim.diagnostic.severity.ERROR] = "  ",
-              [vim.diagnostic.severity.WARN] = " ",
-              [vim.diagnostic.severity.INFO] = " ",
-              [vim.diagnostic.severity.HINT] = "",
-            },
-          },
-        })
-        for _, val in ipairs({ "rust_analyzer", "clangd","pylsp" }) do
-          require("lspconfig")[val].setup({
-            on_attach = function(client, bufnr)
-              if client.server_capabilities.inlayHintProvider then
-                vim.lsp.inlay_hint.enable(true)
-              end
-              local opts = { buffer = bufnr }
-              vim.keymap.set("n", "K", "<CMD>lua vim.lsp.buf.hover()<CR>", opts)
-              vim.keymap.set("n", "gd", "<CMD>lua vim.lsp.buf.definition()<CR>", opts)
-              vim.keymap.set("n", "gi", "<CMD>lua vim.lsp.buf.implementation()<CR>", opts)
-              vim.keymap.set("n", "ga", "<CMD>lua vim.lsp.buf.code_action()<CR>", opts)
-              vim.keymap.set("n", "]d", "<CMD>lua vim.diagnostic.goto_next()<CR>", opts)
-              vim.keymap.set("n", "[d", "<CMD>lua vim.diagnostic.goto_prev()<CR>", opts)
-            end,
-            capabilities = require("blink.cmp").get_lsp_capabilities(),
-          })
-        end
-      end,
-    },
+    {"hrsh7th/nvim-cmp",},
+    -- nvim-cmp completion sources
+    {"hrsh7th/cmp-nvim-lsp",},
+    {'hrsh7th/cmp-cmdline',},
+    {"hrsh7th/cmp-path",},
+    {"hrsh7th/cmp-buffer",},
+    {'SirVer/ultisnips',},
+    {'honza/vim-snippets',},
+    --  {'quangnguyen30192/cmp-nvim-ultisnips',},
     {'sbdchd/neoformat'},  -- 代码格式化 call:F8 call :Neoformat /:Neoformat! python black 
     --" 代码高亮显示:TSInstall python css html javascript scss typescript fish rust dart markdown markdown_inline
     {'nvim-treesitter/nvim-treesitter', build=':TSUpdate'},
@@ -336,10 +241,79 @@ require'nvim-web-devicons'.setup({
  default = true;
 })
 require('rust-tools').setup(rt)
+local cmp = require'cmp'
+--local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
+cmp.setup({
+    snippet = {
+      expand = function(args)
+        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    mapping = {
+      ['<Esc>'] = cmp.mapping.close(),
+      -- ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      -- ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ["<C-p>"] = cmp.mapping.select_prev_item(),
+      ["<C-n>"] = cmp.mapping.select_next_item(),
+      ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+      ["<C-f>"] = cmp.mapping.scroll_docs(4),
+      ["<C-Space>"] = cmp.mapping.complete(),
+      ["<C-e>"] = cmp.mapping.close(),
+      ["<CR>"] = cmp.mapping.confirm({behavior = cmp.ConfirmBehavior.Replace,select = true}),
+      ['<Tab>'] = function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          else
+            fallback()
+            --cmp_ultisnips_mappings.expand_or_jump_forwards(fallback)
+          end
+      end,
+      ['<S-Tab>'] = function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          else
+            -- fallback()
+            cmp_ultisnips_mappings.jump_backwards(fallback)
+          end
+      end,
+      ["<cr>"] = cmp.mapping.confirm({select = true})
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'ultisnips' }, 
+      { name = 'path' },
+      { name = 'buffer' },
+      { name = 'calc' }
+    }),
+    completion = {
+        keyword_length = 1,
+        completeopt = "menu,menuone,noselect"
+    },
+    experimental = {
+        ghost_text = false
+    },
+  })
+
+cmp.setup.cmdline('/', {
+    sources = {
+      { name = 'buffer' }
+    }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+})
 -- Setup lspconfig. update_capabilities --> default_capabilities
--- local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- capabilities.textDocument.completion.completionItem.snippetSupport = true
-local capabilities = require('blink.cmp').get_lsp_capabilities()
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 local lspconfig = require("lspconfig")
 -- nvim-colorizer.lua: #8080ff; 十六进制颜色实时显示
 -- require'colorizer'.setup{
@@ -635,22 +609,22 @@ let g:netrw_winsize = 25
 let g:Lf_WindowPosition = 'popup'
 " brew install ctags 安装ctags 以便支持;:LeaderfFunction
 " 列出所有LeaderF的可执行命令, 供用户检索, 可以不用记忆所有其他命令
-" noremap <silent> <Localleader>f :LeaderfFile <cr>
+noremap <silent> <Localleader>f :LeaderfFile <cr>
 " noremap <silent> <Localleader>fh :LeaderfSelf<cr>
 " 搜索most recently used file, 默认显示100个, 可以配置数量
-" noremap <silent> <Localleader>fm :LeaderfMru<cr>
+noremap <silent> <Localleader>fm :LeaderfMru<cr>
 " 搜索当前目录most recently used file, 默认显示100个, 可以配置数量
-" noremap <silent> <Localleader>fmm :LeaderfMruCwd<cr>
+noremap <silent> <Localleader>fmm :LeaderfMruCwd<cr>
 " 查找当前文件的函数或者方法, 这个基本可以用来替代tarbar
 " noremap <silent> <Localleader>ff :LeaderfFunction!<cr>
 " 检索当前buffer的tags
-" noremap <silent> <Localleader>ft :LeaderfBufTag!<cr>
+noremap <silent> <Localleader>ft :LeaderfBufTag!<cr>
 " 但查找所有listed buffers的tags
 " noremap <silent> <Localleader>fb :LeaderfBufTagAll!<cr>
 " 在当前文件单词搜索行, 可以用来替代/和?
-" noremap <silent> <Localleader>fl :LeaderfLine<cr>
+noremap <silent> <Localleader>fl :LeaderfLine<cr>
 " 在所有vim的windows里检索
-" noremap <silent> <Localleader>fw :LeaderfWindow<cr>
+noremap <silent> <Localleader>fw :LeaderfWindow<cr>
 nnoremap <Localleader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap <Localleader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <Localleader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
