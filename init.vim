@@ -185,17 +185,17 @@ require('lazy').setup({
             preset = 'enter',
             ["<Tab>"] = {
                 function(cmp)
-                  if cmp.is_visible() then
-                    return cmp.select_next()
-                  elseif cmp.snippet_active() then
-                    return cmp.snippet_forward()
-                  else
-                    return false
-                  end
+                    if cmp.is_visible() then
+                        return cmp.select_next()
+                    elseif cmp.snippet_active() then
+                        return cmp.snippet_forward()
+                    else
+                        return false
+                    end
                 end,
                 "fallback",
-              },
-              ["<S-Tab>"] = {
+            },
+            ["<S-Tab>"] = {
                 function(cmp)
                   if cmp.is_visible() then
                     return cmp.select_prev()
@@ -206,13 +206,13 @@ require('lazy').setup({
                   end
                 end,
                 "fallback",
-              },
-              cmdline = {
-                preset = "default",
-                ["<Tab>"] = { "select_next", "fallback" },
-                ["<S-Tab>"] = { "select_prev", "fallback" },
-              },
+            },
         },
+        --cmdline.keymap = {
+        --    preset = "default",
+        --    ["<Tab>"] = { "select_next", "fallback" },
+        --    ["<S-Tab>"] = { "select_prev", "fallback" },
+        -- },
         appearance = {
           -- Sets the fallback highlight groups to nvim-cmp's highlight groups
           -- Useful for when your theme doesn't support blink.cmp
@@ -225,7 +225,7 @@ require('lazy').setup({
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         sources = {
-          default = { 'lsp', 'path', 'snippets', 'buffer' },
+          default = { 'lsp', 'path', 'snippets', 'buffer', 'cmdline', 'omni' },
         },
       },
       opts_extend = { "sources.default" }
@@ -250,7 +250,7 @@ require('lazy').setup({
             },
           },
         })
-        for _, val in ipairs({ "rust_analyzer", "clangd","pylsp" }) do
+        for _, val in ipairs({ "rust_analyzer", "clangd", "pylsp"}) do
           require("lspconfig")[val].setup({
             on_attach = function(client, bufnr)
               if client.server_capabilities.inlayHintProvider then
@@ -652,9 +652,11 @@ let g:Lf_WindowPosition = 'popup'
 " 在所有vim的windows里检索
 " noremap <silent> <Localleader>fw :LeaderfWindow<cr>
 nnoremap <Localleader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
+nnoremap <Localleader>ft <cmd>lua require('telescope.builtin').lsp_document_symbols()<cr>
 nnoremap <Localleader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <Localleader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <Localleader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+nnoremap <Localleader>fm <cmd>lua require('telescope.builtin').oldfiles()<cr>
 " Hop 快捷单词跳转 ;j 行跳转;l 
 noremap <silent> <Localleader>j <cmd>lua require'hop'.hint_words()<cr>
 noremap <silent> <Localleader>l :HopLine<cr>
