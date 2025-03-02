@@ -131,7 +131,8 @@ require('lazy').setup({
     {'norcalli/nvim-colorizer.lua',}, -- color: #8080ff; 十六进制颜色实时显示
     {'scrooloose/nerdcommenter'}, --注释 ;cc 取消注释;cu
     {'mhinz/vim-startify'}, -- 在启动窗口显示最近打开的文件 :Startify
-    {'jiangmiao/auto-pairs'}, -- 括号自动补全
+    -- {'jiangmiao/auto-pairs'}, -- 括号自动补全
+    {'LunarWatcher/auto-pairs'}, -- 括号自动补全
     {'windwp/nvim-ts-autotag'}, -- 自动闭合/重命名html标签  html,tsx,vue,svelte,php,rescript.
     {'godlygeek/tabular'}, -- Text 对齐符号、对齐方式 :Tabularized /,
     {"iamcco/markdown-preview.nvim",event = "BufRead",
@@ -182,7 +183,7 @@ require('lazy').setup({
         -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
         -- See the full "keymap" documentation for information on defining your own keymap.
         keymap = { 
-            preset = 'enter',
+            preset = 'super-tab',
             ["<Tab>"] = {
                 function(cmp)
                     if cmp.is_visible() then
@@ -208,11 +209,25 @@ require('lazy').setup({
                 "fallback",
             },
         },
-        --cmdline.keymap = {
-        --    preset = "default",
-        --    ["<Tab>"] = { "select_next", "fallback" },
-        --    ["<S-Tab>"] = { "select_prev", "fallback" },
-        -- },
+        completion = {
+            -- 'prefix' will fuzzy match on the text before the cursor
+            -- 'full' will fuzzy match on the text before _and_ after the cursor
+            -- example: 'foo_|_bar' will match 'foo_' for 'prefix' and 'foo__bar' for 'full'
+            keyword = { range = 'full' },
+            -- Disable auto brackets
+            -- NOTE: some LSPs may add auto brackets themselves anyway
+            accept = { auto_brackets = { enabled = true }, },
+            -- Don't select by default, auto insert on selection
+            list = { selection = { preselect = false, auto_insert = true } },
+            -- or set via a function
+            menu = {
+              auto_show = true,
+            },
+    -- Show documentation when selecting a completion item
+    documentation = { auto_show = false, auto_show_delay_ms = 500 },
+    -- Display a preview of the selected item on the current line
+    ghost_text = { enabled = false },
+  },
         appearance = {
           -- Sets the fallback highlight groups to nvim-cmp's highlight groups
           -- Useful for when your theme doesn't support blink.cmp
